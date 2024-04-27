@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.javaweb7S.dao.LoginDAO">
+
+	<select id="getLoginCheck" resultType="com.spring.javaweb7S.vo.LoginVO">
+		select * from login where mid = #{mid};
+	</select>
+	
+	<select id="getMember2" resultType="com.spring.javaweb7S.vo.LoginVO">
+		select * from login;
+	</select>
+	
+	<select id="getMidCheck" resultType="com.spring.javaweb7S.vo.LoginVO">
+		select * from login where mid = #{mid};
+	</select>
+	
+	<select id="getChatMessage" resultType="com.spring.javaweb7S.vo.ChatVO">
+		select * from chat;
+	</select>
+	
+	
+	<insert id="setloginInput">
+		insert into login values (default, #{vo.mid}, #{vo.pwd}, #{vo.level});
+	</insert>
+	
+	<insert id="setChatMessageInput">
+		insert into chat values (default, #{vo.chat}, default, #{vo.mid});
+	</insert>
+	
+	
+	<delete id="setlognDelete">
+		delete from login where idx = #{idx};
+	</delete>
+	
+</mapper>

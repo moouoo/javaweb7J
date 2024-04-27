@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.javaweb7S.dao.AssetDAO">
+	
+	<select id="getMemberList" resultType="com.spring.javaweb7S.vo.Member2VO">
+		SELECT *, DATEDIFF(eTerm, sTerm) AS diff FROM Member2 order by idx desc limit #{startIndexNo},#{pageSize};
+	</select>
+	
+	<select id="totRecCnt" resultType="int">
+		select count(*) from registration;
+	</select>
+	
+	<select id="getMedicineList" resultType="com.spring.javaweb7S.vo.MedicineVO">
+		select * from medicine;
+	</select>
+	
+	<select id="getFeed" resultType="com.spring.javaweb7S.vo.FeedVO">
+		select * from feed;
+	</select>
+	
+	<select id="getSemen" resultType="com.spring.javaweb7S.vo.SemenVO">
+		select * from semen;
+	</select>
+	
+	<select id="getSemenArr" resultType="com.spring.javaweb7S.vo.SemenVO">
+		select * from semen
+		order by
+			case #{semenA}
+				when 'BF' then BF
+			end asc,
+			case #{semenA}
+				when 'EMA' then EMA
+				when 'MS' then MS
+				when 'CW' then CW
+			end desc;
+	</select>
+	
+	<select id="getFacility" resultType="com.spring.javaweb7S.vo.FacilityVO">
+		select * from facility order by idx desc limit #{startIndexNo},#{pageSize};
+	</select>
+	
+	
+	
+	<insert id="setMemberInputOk">
+		insert into member2 values (default, #{vo.name}, #{vo.gender}, #{vo.country}, #{vo.sTerm}, #{vo.eTerm}, #{vo.salary}, #{vo.cYear}, #{vo.photo});
+	</insert>
+	
+	<insert id="setMedicineInput">
+		INSERT INTO medicine (idx, title, purchase, price, photo, content, pYear, stock)
+		VALUES (default, #{vo.title}, #{vo.purchase}, #{vo.price}, #{vo.photo}, #{vo.content}, #{vo.pYear}, #{vo.purchase})
+		ON DUPLICATE KEY UPDATE stock = stock + #{vo.purchase};
+	</insert>
+	
+	<insert id="setMedicineRestock">
+		insert into medicine (idx, title, purchase, price, pYear, stock)
+		values (default, #{vo.title}, #{vo.purchase}, #{vo.price}, #{vo.pYear}, #{vo.purchase})
+		on duplicate key update stock = stock + #{vo.purchase};
+	</insert>
+	
+	<insert id="setMedicinePlus">
+		insert into medicinePlus values (default, #{vo2.title}, #{vo2.purchase}, #{vo2.price}, #{vo2.pYear});
+	</insert>
+	
+	<insert id="setFeedInput">
+		insert into feed (idx, dIdx, stages, dIntake, bFeeding) values (default, #{vo.dIdx}, #{vo.stages}, #{vo.dIntake}, #{vo.bFeeding});
+	</insert>
+	
+	<insert id="setFeedOlder">
+		insert into feedOlder values (default, #{vo.stages}, #{vo.tKg}, #{vo.price}, #{vo.pYear});
+	</insert>
+	
+	<insert id="setSemenInput">
+		insert IGNORE into semen values (default, #{vo.sNum}, #{vo.nTank}, #{vo.EMA}, #{vo.MS}, #{vo.BF}, #{vo.CW}, 0);
+	</insert>
+	
+	<insert id="setSemenPlus">
+		insert into semenPlus values (default, #{vo.sNum}, #{vo.purchase}, #{vo.price}, #{vo.pYear});
+	</insert>
+	
+	<insert id="setSemenRestock">
+		insert into semen (idx, sNum, stock)
+		values (default, #{vo2.sNum}, #{vo2.purchase})
+		on duplicate key update stock = stock + #{vo2.purchase};
+	</insert>
+	
+	<insert id="setFacilityInput">
+		insert into facility values (default, #{vo.title}, #{vo.content}, #{vo.price}, #{vo.pYear});
+	</insert>
+	
+	
+	
+	<update id="setMemberUpdateOk">
+		update member2 set name = #{vo.name}, gender = #{vo.gender}, country = #{vo.country}, sTerm = #{vo.sTerm}, eTerm = #{vo.eTerm}, salary = #{vo.salary},
+		cYear = #{vo.cYear}, photo = #{vo.photo} where idx = #{vo.idx};
+	</update>
+	
+	<update id="medicineUseCheck">
+		update medicine set stock = stock - 1 where title = #{title};
+	</update>
+	
+	<update id="setFeedUpdate">
+		update feed set stages = #{vo.stages}, dIntake = #{vo.dIntake}, bFeeding = #{vo.bFeeding} 
+		where dIdx = #{vo.dIdx};
+	</update>
+	
+	<update id="setSemenUse">
+		update semen set stock = stock - 1 where sNum = #{sNum};
+	</update>
+	
+	<update id="setFacilityUpdate">
+		update facility set title = #{vo.title}, content = #{vo.content}, price = #{vo.price}, pYear = #{vo.pYear} 
+		where idx = #{vo.idx};
+	</update>
+	
+	
+	
+	<delete id="memberDelete">
+		delete from member2 where idx = #{idx};
+	</delete>
+	
+	<delete id="setSemenDelete">
+		delete from semen where idx = #{idx};
+	</delete>
+	
+	<delete id="setFacilityDelete">
+		delete from facility where idx = #{idx};
+	</delete>
+	
+</mapper>

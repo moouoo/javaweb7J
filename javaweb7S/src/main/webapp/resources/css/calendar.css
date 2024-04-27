@@ -1,0 +1,59 @@
+@charset "UTF-8";
+
+*{
+	margin: 0;
+	padding: 0;
+	letter-spacing: -1px;
+}
+
+a{
+	color: initial;
+	text-decoration: none;
+}
+
+
+/* Flaxbox */
+
+.flex {display: flex;}
+.col-flex {display: flex;flex-direction: column;}
+.jcc {justify-content: center;}
+.jcsb {justify-content: space-between}
+.aic {align-items; center;}
+
+
+
+/* Basic */
+
+body{
+	background: rgb(222, 250, 255);
+	/* Custom setting */
+	
+}
+
+
+
+/*  Calender Main */
+
+.calendar{
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	gap: 15px;
+	padding: 40px;
+}
+
+.calendar > div {
+	border-radius: 20px;
+}
+
+.calendar-top{
+	padding: 10px 30px;
+	font-weight: 900;
+	color: white;
+	background: royalblue;
+}
+.calendar-top:first-of-type{
+	background: tomato;
+}
+.calendar-top:last-of-type{
+	background: blue;
+}

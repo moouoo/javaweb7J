@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.javaweb7S.dao.LivestockDAO">
+	
+	<select id="getLivestock" resultType="com.spring.javaweb7S.vo.RegistrationVO">
+		select * from registration order by idx desc limit #{startIndexNo},#{pageSize};
+	</select>
+	
+	<select id="totRecCnt" resultType="int">
+		select count(*) from registration;
+	</select>
+	
+	<select id="getListSearch" resultType="com.spring.javaweb7S.vo.RegistrationVO">
+    	select * from registration where ${search} like concat('%',#{searchString},'%') order by idx desc limit #{startIndexNo},#{pageSize};
+  	</select>
+	
+	<select id="totRecCntSearch" resultType="int">
+    	select count(*) from registration where ${search} like concat('%',#{searchString},'%');
+  	</select>
+	
+	<select id="getDiseaseCheck" resultType="com.spring.javaweb7S.vo.DiseaseVO">
+		select dBirth, dType from disease where date_format(dBirth, '%Y-%m')=#{ym} order by dBirth, dType;
+	</select>
+	
+	<select id="getDisease" resultType="com.spring.javaweb7S.vo.DiseaseVO">
+		select * from disease where date_format(dBirth, '%Y-%m-%d') = #{ymd};
+	</select>
+	
+	<select id="getLivestockShipment" resultType="com.spring.javaweb7S.vo.LivestockShipmentVO">
+		select * from livestockShipment order by idx desc limit #{startIndexNo}, #{pageSize};
+	</select>
+	
+	<select id="getEstrusList" resultType="com.spring.javaweb7S.vo.EstrusVO">
+		select eBirth from estrus where date_format(eBirth, '%Y-%m')=#{ym} order by eBirth;
+	</select>
+	
+	<select id="getEstrusDetail" resultType="com.spring.javaweb7S.vo.EstrusVO">
+		select * from estrus where date_format(sBirth, '%Y-%m-%d') = #{ymd};
+	</select>
+	
+	<select id="getEstrus" resultType="com.spring.javaweb7S.vo.EstrusVO">
+		select *,DATE_FORMAT(sBirth, '%Y-%c-%e') as stBirth, DATE_FORMAT(eBirth, '%Y-%c-%e') as etBirth from estrus order by idx desc;
+	</select>
+	
+	<select id="getBirth" resultType="com.spring.javaweb7S.vo.BirthVO">
+		select * from birth order by dBirth asc limit #{startIndexNo}, #{pageSize};
+	</select>
+	
+	<select id="totRecCntShipment" resultType="int">
+		select count(*) from livestockShipment;
+	</select>
+	
+	<select id="setRegistrationCNumCheck" resultType="com.spring.javaweb7S.vo.RegistrationVO">
+		select * from registration where cNum = #{vo.cNum};
+	</select>
+	
+	
+	<!-- insert -->
+	<insert id="setLivestock">
+		insert into registration values (default, #{cNum}, #{birthday}, #{gender}, #{etc}, #{price});
+	</insert>
+	
+	<insert id="setDisease">
+		insert into disease (cNum, dType, content, dBirth)
+		select cNum, #{dType}, #{content}, #{dBirth}
+		from registration
+		where cNum = #{cNum};
+	</insert>
+	
+	<insert id="setLivestockShipment">
+		INSERT INTO livestockShipment (cNum, price, sYear)
+		SELECT cNum, #{price}, #{sYear}
+		FROM registration
+		WHERE cNum = #{cNum};
+	</insert>
+	
+	<insert id="estrusInput">
+		insert into estrus (cNum, sBirth, eBirth, dBirth, etc, eTime)
+		select cNum, #{vo.sBirth}, (select DATE_ADD(#{vo.sBirth},INTERVAL 21 DAY)), (select DATE_ADD(#{vo.sBirth},INTERVAL 284 DAY)), #{vo.etc}, #{vo.eTime}
+		from registration where cNum = #{vo.cNum};
+	</insert>
+	
+	<insert id="setBirthInput">
+		insert into birth (cNum, etc, dBirth)
+		select cNum, #{vo.etc}, #{vo.dBirth}
+		from registration where cNum = #{vo.cNum};
+	</insert>
+	
+	<insert id="setRegistrationPlus">
+		insert into registrationPlus values (default, #{vo2.cNum}, #{vo2.birthday}, #{vo2.price});
+	</insert>
+	
+	
+	
+	
+	<!-- delete -->
+	<delete id="setLivestockDelete">
+		delete from registration where cNum = #{cNum};
+	</delete>
+	
+	<delete id="setdiseaseDeleteOk">
+		delete from disease where idx = #{idx};
+	</delete>
+	
+	<delete id="setRegistrationDelete">
+		delete from registration where idx = #{idx};
+	</delete>
+	
+	<delete id="estrusDeleteOk">
+		delete from estrus where idx = #{idx};
+	</delete>
+	
+	<delete id="setBirthDelete">
+		delete from birth where idx = #{idx};
+	</delete>
+	
+	
+	
+	<!-- update -->
+	<update id="setdiseaseUpdateOk">
+		update disease set dType = #{vo.dType}, content = #{vo.content} where idx = #{vo.idx};
+	</update>
+	
+	<update id="setRegistrationUpdate">
+		update registration set birthday = #{vo.birthday}, gender = #{vo.gender}, etc = #{vo.etc} where idx = #{vo.idx};
+	</update>
+	
+	<update id="setEstrusUpdateOk">
+		update estrus set eCheck = #{vo.eCheck}, etc = #{vo.etc}, sBirth = #{vo.sBirth}, eBirth = (select DATE_ADD(#{vo.sBirth},INTERVAL 21 DAY)), eTime = #{vo.eTime} where idx = #{vo.idx};
+	</update>
+	
+</mapper>

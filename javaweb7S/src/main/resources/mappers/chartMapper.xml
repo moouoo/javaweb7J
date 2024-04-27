@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.javaweb7S.dao.ChartDAO">
+	
+	<select id="getTotalRevenue" resultType="com.spring.javaweb7S.vo.ChartVO">
+		select sum(price) as revenue from livestockShipment;
+	</select>
+	
+	<select id="getTotalExpense" resultType="com.spring.javaweb7S.vo.ChartVO">
+		select sum(price) as expense 
+		from (
+			select price from facility
+			union all
+			select purchase * price as price from semenPlus
+			union all
+			select tKg * price as price from feedOlder
+			union all
+			select purchase * price as price from medicinePlus
+			union all
+			select purchase * price as price from medicine
+			union all
+			select salary * floor(DATEDIFF(eTerm, sTerm) / 30) as price from member2
+			union all
+			select price from registrationPlus
+		) as expense;
+	</select>
+	
+	<select id="getYearRevenue" resultType="com.spring.javaweb7S.vo.ChartVO">
+		select sum(price) as yRevenue from livestockShipment 
+		where substring(sYear, 1 ,4) = #{year};
+	</select>
+	
+	<select id="getYearExpense" resultType="com.spring.javaweb7S.vo.ChartVO">
+		select sum(price) as yExpense
+		from(
+			select price from facility where substring(pYear, 1, 4) = #{year}
+			union all
+			select purchase * price as price from semenPlus where substring(pYear, 1, 4) = #{year}
+			union all
+			select tKg * price as price from feedOlder where substring(pYear, 1, 4) = #{year}
+			union all
+			select purchase * price as price from medicinePlus where substring(pYear, 1, 4) = #{year}
+			union all
+			select purchase * price as price from medicine where substring(pYear, 1, 4) = #{year}
+			union all
+			select salary * floor(DATEDIFF(eTerm, sTerm) / 30) as price from member2 where substring(cYear, 1, 4) = #{year}
+			union all
+			select price from registrationPlus where substring(birthday, 1, 4) = #{year}
+		) as yExpense;
+	</select>
+	
+	<select id="getMemberExpense" resultType="com.spring.javaweb7S.vo.ChartVO">
+		select sum(salary * floor(DATEDIFF(eTerm, sTerm) / 30)) as memberP from member2;
+	</select>
+	
+	<select id="getMedicineExpense" resultType="com.spring.javaweb7S.vo.ChartVO">
+		select sum(price) as medicineP
+		from(
+			select purchase * price as price from medicinePlus
+			union all
+			select purchase * price as price from medicine
+		) as medicineP;
+	</select>
+	
+	<select id="getFeedExpense" resultType="com.spring.javaweb7S.vo.ChartVO">
+		select sum(tKg * price) as feedP from feedOlder;
+	</select>
+	
+	<select id="getSemenExpense" resultType="com.spring.javaweb7S.vo.ChartVO">
+		select sum(purchase * price) as semenP from semenPlus;
+	</select>
+	
+	<select id="getFacilityExpense" resultType="com.spring.javaweb7S.vo.ChartVO">
+		select sum(price) as facilityP from facility;
+	</select>
+	
+	<select id="getregistrationExpense" resultType="com.spring.javaweb7S.vo.ChartVO">
+		select sum(price) as registP from registrationPlus;
+	</select>
+	
+	<select id="getSurveyContent" resultType="com.spring.javaweb7S.vo.SurveyContentVO">
+		select * from nSurvey order by idx desc limit #{startIndexNo},#{pageSize};
+	</select>
+	
+	<select id="setSurveyContent" resultType="com.spring.javaweb7S.vo.SurveyContentVO">
+		select * from nSurvey where idx = #{idx};
+	</select>
+	
+	<select id="totRecCntSurvey" resultType="int">
+		select count(*) from nSurvey;
+	</select>
+	
+	
+	
+	<insert id="setSurveyInput">
+		insert into nSurvey values (default, #{vo.sTitle}, #{vo.content}, default, default);
+	</insert>
+	
+	
+	<delete id="setSurveyDelete">
+		delete from nSurvey where idx = #{idx};
+	</delete>
+	
+	
+	
+	<update id="setSurveyReadNum">
+		update nSurvey set readNum = readNum + 1 where idx = #{idx};
+	</update>
+	
+</mapper>
